@@ -46,6 +46,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     private LevelCondition m_levelCondition;
     [SerializeField] PoolingController m_pooling;
 
+    [Header("Config Skin")]
+    [SerializeField] eTypeSkinItem m_typeSkinItem;
+    public eTypeSkinItem TypeSkin => m_typeSkinItem;
+
+
 #if UNITY_EDITOR
     private void OnValidate()
     {
@@ -176,6 +181,15 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     public void DisableGOPooling(GameObject go)
     {
         m_pooling.DisableObjPooling(go);
+    }
+    #endregion
+
+    #region Skin
+    public void ChangeSkinItem()
+    {
+        if (m_typeSkinItem == eTypeSkinItem.NORMAL)
+            m_typeSkinItem = eTypeSkinItem.FISH;
+        else m_typeSkinItem = eTypeSkinItem.NORMAL;
     }
     #endregion
 }

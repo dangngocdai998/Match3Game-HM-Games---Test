@@ -10,13 +10,13 @@ public class ImageManager : SingletonMonoBehaviour<ImageManager>
     [SerializeField] Sprite spriteVertical;
 
     [Header("Sprite Items Normal")]
-    [SerializeField] Sprite spriteItem1;
-    [SerializeField] Sprite spriteItem2;
-    [SerializeField] Sprite spriteItem3;
-    [SerializeField] Sprite spriteItem4;
-    [SerializeField] Sprite spriteItem5;
-    [SerializeField] Sprite spriteItem6;
-    [SerializeField] Sprite spriteItem7;
+    [SerializeField] SkinItemSObject skinItem1;
+    [SerializeField] SkinItemSObject skinItem2;
+    [SerializeField] SkinItemSObject skinItem3;
+    [SerializeField] SkinItemSObject skinItem4;
+    [SerializeField] SkinItemSObject skinItem5;
+    [SerializeField] SkinItemSObject skinItem6;
+    [SerializeField] SkinItemSObject skinItem7;
 
     public Sprite GetSpriteItemBonus(BonusItem.eBonusType type)
     {
@@ -33,13 +33,13 @@ public class ImageManager : SingletonMonoBehaviour<ImageManager>
     {
         return type switch
         {
-            NormalItem.eNormalType.TYPE_ONE => spriteItem1,
-            NormalItem.eNormalType.TYPE_TWO => spriteItem2,
-            NormalItem.eNormalType.TYPE_THREE => spriteItem3,
-            NormalItem.eNormalType.TYPE_FOUR => spriteItem4,
-            NormalItem.eNormalType.TYPE_FIVE => spriteItem5,
-            NormalItem.eNormalType.TYPE_SIX => spriteItem6,
-            NormalItem.eNormalType.TYPE_SEVEN => spriteItem7,
+            NormalItem.eNormalType.TYPE_ONE => skinItem1.GetSkinItem(GameManager.Instance.TypeSkin),
+            NormalItem.eNormalType.TYPE_TWO => skinItem2.GetSkinItem(GameManager.Instance.TypeSkin),
+            NormalItem.eNormalType.TYPE_THREE => skinItem3.GetSkinItem(GameManager.Instance.TypeSkin),
+            NormalItem.eNormalType.TYPE_FOUR => skinItem4.GetSkinItem(GameManager.Instance.TypeSkin),
+            NormalItem.eNormalType.TYPE_FIVE => skinItem5.GetSkinItem(GameManager.Instance.TypeSkin),
+            NormalItem.eNormalType.TYPE_SIX => skinItem6.GetSkinItem(GameManager.Instance.TypeSkin),
+            NormalItem.eNormalType.TYPE_SEVEN => skinItem7.GetSkinItem(GameManager.Instance.TypeSkin),
             _ => null,
         };
     }
