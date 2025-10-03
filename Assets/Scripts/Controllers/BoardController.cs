@@ -303,4 +303,16 @@ public class BoardController : MonoBehaviour
 
         m_potentialMatch.Clear();
     }
+
+    #region Restart
+    public void RestartCells()
+    {
+        StartCoroutine(RefillBoardCoroutine());
+    }
+
+    public void SetRestartParam()
+    {
+        m_gameOver = false;
+    }
+    #endregion
 }
