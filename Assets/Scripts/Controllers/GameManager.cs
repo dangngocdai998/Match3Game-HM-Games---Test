@@ -44,7 +44,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     [SerializeField] UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+    private eLevelMode m_currentMode;
     [SerializeField] PoolingController m_pooling;
+
 
     [Header("Config Skin")]
     [SerializeField] eTypeSkinItem m_typeSkinItem;
@@ -109,6 +111,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     public void LoadLevel(eLevelMode mode)
     {
+        m_currentMode = mode;
         if (!m_boardController)
             m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
@@ -190,6 +193,37 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         if (m_typeSkinItem == eTypeSkinItem.NORMAL)
             m_typeSkinItem = eTypeSkinItem.FISH;
         else m_typeSkinItem = eTypeSkinItem.NORMAL;
+    }
+    #endregion
+
+    #region Restart
+    public void Restart()
+    {
+        m_boardController.RestartCells();
+
+        if (m_currentMode == eLevelMode.MOVES)
+        {
+            if (m_levelCondition == null)
+            {
+                m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
+                m_levelCondition.ConditionCompleteEvent += GameOver;
+            }
+            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), m_boardController);
+        }
+        else if (m_currentMode == eLevelMode.TIMER)
+        {
+            if (m_levelCondition == null)
+            {
+                m_levelCondition = this.gameObject.AddComponent<LevelTime>();
+                m_levelCondition.ConditionCompleteEvent += GameOver;
+            }
+
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);//
+        }
+
+
+        State = eStateGame.GAME_STARTED;
+        m_boardController.SetRestartParam();
     }
     #endregion
 }
