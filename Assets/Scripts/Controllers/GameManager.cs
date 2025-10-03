@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     public event Action<eStateGame> StateChangedAction = delegate { };
 
@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+    [SerializeField] PoolingController m_pooling;
 
 #if UNITY_EDITOR
     private void OnValidate()
@@ -64,8 +65,9 @@ public class GameManager : MonoBehaviour
     }
 #endif
 
-    private void Awake()
+    public override void Awake()
     {
+        base.Awake();
         State = eStateGame.SETUP;
 
         // m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
@@ -155,4 +157,24 @@ public class GameManager : MonoBehaviour
             m_levelCondition = null;
         }
     }
+
+    #region Pooling
+    public GameObject GetItemInPooling(Sprite sprite)
+    {
+        GameObject go = m_pooling.GetObject(PoolKey.KEY_ITEM);
+        go.GetComponent<SpriteRenderer>().sprite = sprite;
+        go.transform.localScale = Vector3.one;
+        return go;
+    }
+    public GameObject GetCellInPooling(Vector3 position, Transform parent = null)
+    {
+        GameObject go = m_pooling.GetObject(PoolKey.KEY_CELL, position, parent);
+        go.transform.localScale = Vector3.one;
+        return go;
+    }
+    public void DisableGOPooling(GameObject go)
+    {
+        m_pooling.DisableObjPooling(go);
+    }
+    #endregion
 }

@@ -52,7 +52,10 @@ public class NormalItem : Item
 
         return prefabname;
     }
-
+    protected override Sprite GetSpriteView()
+    {
+        return ImageManager.Instance.GetSpriteItemNormal(ItemType);
+    }
     internal override bool IsSameType(Item other)
     {
         NormalItem it = other as NormalItem;

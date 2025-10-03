@@ -40,7 +40,10 @@ public class BonusItem : Item
 
         return prefabname;
     }
-
+    protected override Sprite GetSpriteView()
+    {
+        return ImageManager.Instance.GetSpriteItemBonus(ItemType);
+    }
     internal override bool IsSameType(Item other)
     {
         BonusItem it = other as BonusItem;
