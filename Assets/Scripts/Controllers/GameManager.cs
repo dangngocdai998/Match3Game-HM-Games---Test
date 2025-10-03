@@ -36,22 +36,41 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private GameSettings m_gameSettings;
+    [SerializeField] GameSettings m_gameSettings;
 
 
     private BoardController m_boardController;
 
-    private UIMainManager m_uiMenu;
+    [SerializeField] UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+
+#if UNITY_EDITOR
+    private void OnValidate()
+    {
+        if (!m_uiMenu)
+        {
+            m_uiMenu = FindObjectOfType<UIMainManager>();
+            if (!m_uiMenu)
+                Debug.LogError("UIMainManager not found in Scene!!!!");
+        }
+
+        if (!m_gameSettings)
+        {
+            m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+            if (!m_gameSettings)
+                Debug.LogError("GameSettings not found in Rescources!!!!");
+        }
+    }
+#endif
 
     private void Awake()
     {
         State = eStateGame.SETUP;
 
-        m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        // m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
+        // m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
 
@@ -71,7 +90,7 @@ public class GameManager : MonoBehaviour
     {
         State = state;
 
-        if(State == eStateGame.PAUSE)
+        if (State == eStateGame.PAUSE)
         {
             DOTween.PauseAll();
         }
