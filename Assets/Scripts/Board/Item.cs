@@ -14,19 +14,21 @@ public class Item
 
     public virtual void SetView()
     {
-        string prefabname = GetPrefabName();
+        // string prefabname = GetPrefabName();
 
-        if (!string.IsNullOrEmpty(prefabname))
-        {
-            GameObject prefab = Resources.Load<GameObject>(prefabname);
-            if (prefab)
-            {
-                View = GameObject.Instantiate(prefab).transform;
-            }
-        }
+        // if (!string.IsNullOrEmpty(prefabname))
+        // {
+        // GameObject prefab = Resources.Load<GameObject>(prefabname);
+        // if (prefab)
+        // {
+        // View = GameObject.Instantiate(prefab).transform;
+        // }
+        View = GameManager.Instance.GetItemInPooling(GetSpriteView()).transform;
+        // }
     }
 
     protected virtual string GetPrefabName() { return string.Empty; }
+    protected virtual Sprite GetSpriteView() { return null; }
 
     public virtual void SetCell(Cell cell)
     {
@@ -101,7 +103,7 @@ public class Item
             View.DOScale(0.1f, 0.1f).OnComplete(
                 () =>
                 {
-                    GameObject.Destroy(View.gameObject);
+                    GameManager.Instance.DisableGOPooling(View.gameObject);
                     View = null;
                 }
                 );
@@ -132,7 +134,7 @@ public class Item
 
         if (View)
         {
-            GameObject.Destroy(View.gameObject);
+            GameManager.Instance.DisableGOPooling(View.gameObject);
             View = null;
         }
     }

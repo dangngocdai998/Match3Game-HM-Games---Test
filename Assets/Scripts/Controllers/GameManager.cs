@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     public event Action<eStateGame> StateChangedAction = delegate { };
 
@@ -36,22 +36,43 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private GameSettings m_gameSettings;
+    [SerializeField] GameSettings m_gameSettings;
 
 
     private BoardController m_boardController;
 
-    private UIMainManager m_uiMenu;
+    [SerializeField] UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+    [SerializeField] PoolingController m_pooling;
 
-    private void Awake()
+#if UNITY_EDITOR
+    private void OnValidate()
     {
+        if (!m_uiMenu)
+        {
+            m_uiMenu = FindObjectOfType<UIMainManager>();
+            if (!m_uiMenu)
+                Debug.LogError("UIMainManager not found in Scene!!!!");
+        }
+
+        if (!m_gameSettings)
+        {
+            m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+            if (!m_gameSettings)
+                Debug.LogError("GameSettings not found in Rescources!!!!");
+        }
+    }
+#endif
+
+    public override void Awake()
+    {
+        base.Awake();
         State = eStateGame.SETUP;
 
-        m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
+        // m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
+        // m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
 
@@ -63,7 +84,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (m_boardController != null) m_boardController.Update();
+        m_boardController?.UpdateBoard();
     }
 
 
@@ -71,7 +92,7 @@ public class GameManager : MonoBehaviour
     {
         State = state;
 
-        if(State == eStateGame.PAUSE)
+        if (State == eStateGame.PAUSE)
         {
             DOTween.PauseAll();
         }
@@ -83,7 +104,8 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(eLevelMode mode)
     {
-        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+        if (!m_boardController)
+            m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
 
         if (mode == eLevelMode.MOVES)
@@ -94,7 +116,7 @@ public class GameManager : MonoBehaviour
         else if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);
         }
 
         m_levelCondition.ConditionCompleteEvent += GameOver;
@@ -112,8 +134,8 @@ public class GameManager : MonoBehaviour
         if (m_boardController)
         {
             m_boardController.Clear();
-            Destroy(m_boardController.gameObject);
-            m_boardController = null;
+            // Destroy(m_boardController.gameObject);
+            // m_boardController = null;
         }
     }
 
@@ -136,4 +158,24 @@ public class GameManager : MonoBehaviour
             m_levelCondition = null;
         }
     }
+
+    #region Pooling
+    public GameObject GetItemInPooling(Sprite sprite)
+    {
+        GameObject go = m_pooling.GetObject(PoolKey.KEY_ITEM);
+        go.GetComponent<SpriteRenderer>().sprite = sprite;
+        go.transform.localScale = Vector3.one;
+        return go;
+    }
+    public GameObject GetCellInPooling(Vector3 position, Transform parent = null)
+    {
+        GameObject go = m_pooling.GetObject(PoolKey.KEY_CELL, position, parent);
+        go.transform.localScale = Vector3.one;
+        return go;
+    }
+    public void DisableGOPooling(GameObject go)
+    {
+        m_pooling.DisableObjPooling(go);
+    }
+    #endregion
 }
