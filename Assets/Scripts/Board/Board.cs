@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class Board
 {
@@ -132,9 +133,18 @@ public class Board
         }
     }
 
-
+    Dictionary<NormalItem.eNormalType, int> dicNumberItemSpaw = new Dictionary<NormalItem.eNormalType, int>();
     internal void FillGapsWithNewItems()
     {
+        dicNumberItemSpaw.Clear();
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_ONE, 0);
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_TWO, 0);
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_THREE, 0);
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_FOUR, 0);
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_FIVE, 0);
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_SIX, 0);
+        dicNumberItemSpaw.Add(NormalItem.eNormalType.TYPE_SEVEN, 0);
+
         for (int x = 0; x < boardSizeX; x++)
         {
             for (int y = 0; y < boardSizeY; y++)
@@ -144,7 +154,11 @@ public class Board
 
                 NormalItem item = new NormalItem();
 
-                item.SetType(Utils.GetRandomNormalType());
+                // item.SetType(Utils.GetRandomNormalType());
+                item.SetType(GetNormalType(cell));
+
+
+
                 item.SetView();
                 item.SetViewRoot(m_root);
 
@@ -152,6 +166,72 @@ public class Board
                 cell.ApplyItemPosition(true);
             }
         }
+    }
+
+    NormalItem.eNormalType GetNormalType(Cell cell)
+    {
+        List<NormalItem.eNormalType> types = new List<NormalItem.eNormalType>();
+        if (cell.NeighbourBottom != null)
+        {
+            NormalItem nitem = cell.NeighbourBottom.Item as NormalItem;
+            if (nitem != null)
+            {
+                types.Add(nitem.ItemType);
+            }
+        }
+
+        if (cell.NeighbourLeft != null)
+        {
+            NormalItem nitem = cell.NeighbourLeft.Item as NormalItem;
+            if (nitem != null)
+            {
+                types.Add(nitem.ItemType);
+            }
+        }
+
+
+
+        List<NormalItem.eNormalType> listTypes = Enum.GetValues(typeof(NormalItem.eNormalType)).Cast<NormalItem.eNormalType>().Except(types).ToList();
+
+
+
+
+
+        Dictionary<NormalItem.eNormalType, int> _dicNumberItemSpaw = new Dictionary<NormalItem.eNormalType, int>();
+
+        int numberItemsMin = 0;
+
+        for (int i = 0; i < listTypes.Count; i++)
+        {
+            if (i == 0)
+            {
+                numberItemsMin = dicNumberItemSpaw[listTypes[0]];
+                _dicNumberItemSpaw.Add(listTypes[0], dicNumberItemSpaw[listTypes[0]]);
+            }
+            else
+            {
+                if (dicNumberItemSpaw[listTypes[i]] <= numberItemsMin)
+                {
+                    numberItemsMin = dicNumberItemSpaw[listTypes[i]];
+                    _dicNumberItemSpaw.Add(listTypes[i], dicNumberItemSpaw[listTypes[i]]);
+                }
+            }
+        }
+
+
+        foreach (var _item in _dicNumberItemSpaw.Where(kvp => kvp.Value != numberItemsMin).ToList())
+        {
+            _dicNumberItemSpaw.Remove(_item.Key);
+        }
+
+        // NormalItem.eNormalType typeSet = Utils.GetRandomNormalTypeExcept(types.ToArray());
+
+        List<NormalItem.eNormalType> keyList = new List<NormalItem.eNormalType>(_dicNumberItemSpaw.Keys);
+
+        NormalItem.eNormalType typeSet = keyList[Random.Range(0, keyList.Count)];
+
+        dicNumberItemSpaw[typeSet] += 1;
+        return typeSet;
     }
 
     internal void ExplodeAllItems()
