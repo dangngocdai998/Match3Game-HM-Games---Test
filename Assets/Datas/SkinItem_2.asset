@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34422dccdbeca1149b1098d967e91a8c, type: 3}
+  m_Name: SkinItem_2
+  m_EditorClassIdentifier: 
+  sprite_SkinNormal: {fileID: 21300000, guid: fa170d4df6f61ca4d87906fecd033754, type: 3}
+  sprite_SkinFish: {fileID: 21300000, guid: b3d03f60a408b6149ba58fff7af8beef, type: 3}
