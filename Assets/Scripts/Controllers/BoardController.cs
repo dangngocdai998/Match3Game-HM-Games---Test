@@ -42,7 +42,7 @@ public class BoardController : MonoBehaviour
         m_cam = Camera.main;
 
         m_board = new Board(this.transform, gameSettings);
-
+        m_gameOver = false;
         Fill();
     }
 
@@ -70,7 +70,7 @@ public class BoardController : MonoBehaviour
     }
 
 
-    public void Update()
+    public void UpdateBoard()
     {
         if (m_gameOver) return;
         if (IsBusy) return;
@@ -224,7 +224,7 @@ public class BoardController : MonoBehaviour
             matches[i].ExplodeItem();
         }
 
-        if(matches.Count > m_gameSettings.MatchesMin)
+        if (matches.Count > m_gameSettings.MatchesMin)
         {
             m_board.ConvertNormalToBonus(matches, cellEnd);
         }

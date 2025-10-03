@@ -84,7 +84,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     // Update is called once per frame
     void Update()
     {
-        if (m_boardController != null) m_boardController.Update();
+        m_boardController?.UpdateBoard();
     }
 
 
@@ -104,7 +104,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     public void LoadLevel(eLevelMode mode)
     {
-        m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+        if (!m_boardController)
+            m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
         m_boardController.StartGame(this, m_gameSettings);
 
         if (mode == eLevelMode.MOVES)
@@ -115,7 +116,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         else if (mode == eLevelMode.TIMER)
         {
             m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);
         }
 
         m_levelCondition.ConditionCompleteEvent += GameOver;
@@ -133,8 +134,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         if (m_boardController)
         {
             m_boardController.Clear();
-            Destroy(m_boardController.gameObject);
-            m_boardController = null;
+            // Destroy(m_boardController.gameObject);
+            // m_boardController = null;
         }
     }
 
